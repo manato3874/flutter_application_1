@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter_application_1/HomePage.dart';
-import 'package:flutter_application_1/MainPageWidget.dart';
+import 'package:flutter_application_1/submission/Main.dart';
+//import 'package:flutter_application_1/MainPageWidget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -35,7 +36,7 @@ class MyApp extends StatelessWidget {
       ),
       //home: const MyHomePage(title: 'Flutter Demo Home Page'),
        // home: HomePage(),
-       home: MainPageWidget(),
+       home: Main(),
     );
   }
 }

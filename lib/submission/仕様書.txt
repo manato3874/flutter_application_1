@@ -1,0 +1,15 @@
+画面遷移順
+
+ Main.dart
+    ↓
+ Onepage.dart
+    ↓
+ Twopage.dart
+    ↓
+ Threepage.dart
+    ↓
+ Fourpage.dart
+
+
+ タイトル名にわかりやすく
+ 数字も含め、あいうえお順も入れました。
