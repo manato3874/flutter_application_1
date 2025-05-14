@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter_application_1/HomePage.dart';
-import 'package:flutter_application_1/submission/Main.dart';
-//import 'package:flutter_application_1/MainPageWidget.dart';
+import 'package:flutter_application_1/project/Main.dart';
+//import 'package:flutter_application_1/submission/Main.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'アニメアプリ',
       theme: ThemeData(
         // This is the theme of your application.
         //
