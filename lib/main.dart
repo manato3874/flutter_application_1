@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 //import 'package:flutter_application_1/HomePage.dart';
 import 'package:flutter_application_1/project/Main.dart';
+import 'package:flutter_application_1/project/anime.dart';
 //import 'package:flutter_application_1/submission/Main.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(AnimeAdapter());
+  await Hive.openBox<Anime>('animeBox');
+
   runApp(const MyApp());
 }
 
