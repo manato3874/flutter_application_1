@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_application_1/project/anime.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 
 class AnimeListPage extends StatefulWidget {
   @override
@@ -49,12 +51,34 @@ class _AnimeListPageState extends State<AnimeListPage> {
               builder: (context, Box<Anime> box, _) {
                 if (box.isEmpty) return Center(child: Text('アニメがありません'));
                 return ListView.builder(
-                  itemCount: box.length,
                   itemBuilder: (context, index) {
                     final anime = box.getAt(index);
                     return ListTile(
                       title: Text(anime!.title),
-                      subtitle: Text('${anime.musicTitle}（${anime.airDate.toLocal()}）'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('${anime.musicTitle}（${anime.airDate.toLocal()}）'),
+                          GestureDetector(
+                            onTap: () async {
+                              final url = Uri.parse(anime.youtubeUrl);
+                              if (await canLaunchUrl(url)) {
+                                await launchUrl(url, mode: LaunchMode.externalApplication);
+                              } else {
+                                // エラー処理（オプション）
+                                print('URLを開けませんでした: ${anime.youtubeUrl}');
+                              }
+                            },
+                            child: Text(
+                              anime.youtubeUrl,
+                              style: TextStyle(
+                                color: Colors.blue,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       trailing: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () => box.deleteAt(index),
