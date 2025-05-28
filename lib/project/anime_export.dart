@@ -1,49 +1,27 @@
-import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'anime.dart';
+import 'dart:convert';
+import 'dart:html' as html; // Flutter Webのみ
+import 'package:hive/hive.dart';
+import 'anime.dart'; // あなたのAnimeモデル
 
-class AnimeListPage1 extends StatefulWidget {
-  @override
-  _AnimeListPageState createState() => _AnimeListPageState();
-}
+void exportAnimeDataAsJson() async {
+  final box = Hive.box<Anime>('animeBox');
+  final List<Map<String, dynamic>> animeList = [];
 
-class _AnimeListPageState extends State<AnimeListPage1> {
-  late Box<Anime> animeBox;
-
-  @override
-  void initState() {
-    super.initState();
-    animeBox = Hive.box<Anime>('animeBox'); // openBoxはmainで済ませてる前提
+  for (var anime in box.values) {
+    animeList.add({
+      'title': anime.title,
+      'musicTitle': anime.musicTitle,
+      'youtubeUrl': anime.youtubeUrl,
+      'imageUrl': anime.imageUrl,
+      'airDate': anime.airDate.toIso8601String(),
+    });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text('保存されたアニメ一覧')),
-      body: ValueListenableBuilder(
-        valueListenable: animeBox.listenable(),
-        builder: (context, Box<Anime> box, _) {
-          if (box.isEmpty) {
-            return Center(child: Text("保存されたアニメはありません"));
-          }
-
-          return ListView.builder(
-            itemCount: box.length,
-            itemBuilder: (context, index) {
-              final anime = box.getAt(index);
-              if (anime == null) return SizedBox();
-
-              return ListTile(
-                title: Text(anime.title),
-                subtitle: Text(
-                  '${anime.musicTitle}\n放送日: ${anime.airDate.toLocal()}',
-                ),
-                isThreeLine: true,
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
+  final jsonString = jsonEncode(animeList);
+  final blob = html.Blob([jsonString], 'application/json');
+  final url = html.Url.createObjectUrlFromBlob(blob);
+  final anchor = html.AnchorElement(href: url)
+    ..setAttribute('download', 'anime_data.json')
+    ..click();
+  html.Url.revokeObjectUrl(url);
 }
