@@ -1,49 +1,80 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_application_1/project/anime_datebase.dart';
 import 'anime.dart';
+import 'edit.dart';
+import 'dart:convert';
+import 'dart:io' as io;
+import 'package:path_provider/path_provider.dart';
+
+// JSONから読み込む非同期関数
+
+Future<List<Anime>> loadAnimeList() async {
+  final dir = await getApplicationDocumentsDirectory();
+  final file = io.File('${dir.path}/anime_list.json');
+  if (!await file.exists()) return [];
+
+  final jsonStr = await file.readAsString();
+  final decoded = jsonDecode(jsonStr) as List;
+  return decoded.map((json) => Anime.fromJson(json)).toList();
+}
+
 
 class AnimeListPage1 extends StatefulWidget {
   @override
-  _AnimeListPageState createState() => _AnimeListPageState();
+  _AnimeListPage1State createState() => _AnimeListPage1State();
 }
 
-class _AnimeListPageState extends State<AnimeListPage1> {
-  late Box<Anime> animeBox;
+class _AnimeListPage1State extends State<AnimeListPage1> {
+  List<Anime> animeList = [];
 
   @override
   void initState() {
     super.initState();
-    animeBox = Hive.box<Anime>('animeBox'); // openBoxはmainで済ませてる前提
+    _loadAnimeList();
+  }
+
+  // 非同期でデータを読み込む
+  Future<void> _loadAnimeList() async {
+    //final list = await loadAnimeList();
+    final list = await AnimeDatabase.getAllAnime();
+    setState(() {
+      animeList = list;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('保存されたアニメ一覧')),
-      body: ValueListenableBuilder(
-        valueListenable: animeBox.listenable(),
-        builder: (context, Box<Anime> box, _) {
-          if (box.isEmpty) {
-            return Center(child: Text("保存されたアニメはありません"));
-          }
-
-          return ListView.builder(
-            itemCount: box.length,
-            itemBuilder: (context, index) {
-              final anime = box.getAt(index);
-              if (anime == null) return SizedBox();
-
-              return ListTile(
-                title: Text(anime.title),
-                subtitle: Text(
-                  '${anime.musicTitle}\n放送日: ${anime.airDate.toLocal()}',
-                ),
-                isThreeLine: true,
-              );
-            },
-          );
-        },
-      ),
+      appBar: AppBar(title: Text('保存したアニメ一覧')),
+      body: animeList.isEmpty
+          ? Center(child: Text("データがありません"))
+          : ListView.builder(
+              itemCount: animeList.length,
+              itemBuilder: (context, index) {
+                final anime = animeList[index];
+                return ListTile(
+                  leading: Image.network(
+                    anime.imageUrl,
+                    width: 50,
+                    errorBuilder: (c, e, s) => Icon(Icons.image_not_supported),
+                  ),
+                  title: Text(anime.title),
+                  subtitle: Text(
+                    '${anime.musicTitle} (${anime.airDate.toLocal().toIso8601String().split("T")[0]})',
+                  ),
+                  trailing: Icon(Icons.play_circle_fill),
+                  onTap: () {
+                    // TODO: YouTubeリンク開くなど
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditAnimePage(anime: anime),
+                      ),
+                    ).then((_) => _loadAnimeList()); 
+                  },
+                );
+              },
+            ),
     );
   }
 }

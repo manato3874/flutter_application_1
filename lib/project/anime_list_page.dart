@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_application_1/project/anime.dart';
-import 'package:url_launcher/url_launcher.dart';
-
+import 'package:flutter_application_1/project/anime_export.dart';
+import 'package:flutter_application_1/project/anime_datebase.dart';
+import 'dart:convert';
+import 'dart:io' as io;
+import 'package:path_provider/path_provider.dart';
+import 'package:flutter/foundation.dart';
 
 class AnimeListPage extends StatefulWidget {
   @override
@@ -13,19 +16,27 @@ class _AnimeListPageState extends State<AnimeListPage> {
   final titleController = TextEditingController();
   final musicController = TextEditingController();
   final urlController = TextEditingController();
+  final pickedImageController = TextEditingController();
 
   Future<void> _addAnime() async {
-    final box = Hive.box<Anime>('animeBox');
+    
     final anime = Anime(
       title: titleController.text,
       airDate: DateTime.now(),
       musicTitle: musicController.text,
       youtubeUrl: urlController.text,
+      imageUrl: pickedImageController.text,
     );
-    await box.add(anime);
+    
+    await AnimeDatabase.insertAnime(anime);
+    
+    setState(() {
     titleController.clear();
     musicController.clear();
     urlController.clear();
+    pickedImageController.clear();
+    });
+
   }
 
   @override
@@ -41,56 +52,36 @@ class _AnimeListPageState extends State<AnimeListPage> {
                 TextField(controller: titleController, decoration: InputDecoration(labelText: 'タイトル')),
                 TextField(controller: musicController, decoration: InputDecoration(labelText: '主題歌')),
                 TextField(controller: urlController, decoration: InputDecoration(labelText: 'YouTube URL')),
+                TextField(controller: pickedImageController, decoration: InputDecoration(labelText: '画像URL')),
                 ElevatedButton(onPressed: _addAnime, child: Text('保存')),
               ],
             ),
           ),
-          Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: Hive.box<Anime>('animeBox').listenable(),
-              builder: (context, Box<Anime> box, _) {
-                if (box.isEmpty) return Center(child: Text('アニメがありません'));
-                return ListView.builder(
-                  itemBuilder: (context, index) {
-                    final anime = box.getAt(index);
-                    return ListTile(
-                      title: Text(anime!.title),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('${anime.musicTitle}（${anime.airDate.toLocal()}）'),
-                          GestureDetector(
-                            onTap: () async {
-                              final url = Uri.parse(anime.youtubeUrl);
-                              if (await canLaunchUrl(url)) {
-                                await launchUrl(url, mode: LaunchMode.externalApplication);
-                              } else {
-                                // エラー処理（オプション）
-                                print('URLを開けませんでした: ${anime.youtubeUrl}');
-                              }
-                            },
-                            child: Text(
-                              anime.youtubeUrl,
-                              style: TextStyle(
-                                color: Colors.blue,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => box.deleteAt(index),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
+          ElevatedButton(
+            onPressed: exportAnimeDataAsJson,
+            child: const Text('JSONとしてエクスポート'),
           ),
         ],
       ),
     );
   }
+
+  Future<List<Anime>> loadAnimeList() async {
+    if (kIsWeb) {
+      // Web環境：localStorageから読み込む
+      // dart:html を使っているファイルでのみ有効
+      // この部分を使いたい場合は、別ファイルに分けて dart:html をimportしてください
+      throw UnsupportedError('Webでは別のファイルで対応してください');
+    } else {
+      // Windows環境：ローカルファイルから読み込む
+      final dir = await getApplicationDocumentsDirectory();
+      final file = io.File('${dir.path}/anime_list.json');
+      if (!await file.exists()) return [];
+
+      final jsonStr = await file.readAsString();
+      final decoded = jsonDecode(jsonStr) as List;
+      return decoded.map((json) => Anime.fromJson(json)).toList();
+    }
+  }
+
 }

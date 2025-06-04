@@ -1,25 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 //import 'package:flutter_application_1/HomePage.dart';
 import 'package:flutter_application_1/project/Main.dart';
-import 'package:flutter_application_1/project/anime.dart';
 //import 'package:flutter_application_1/submission/Main.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Hive.initFlutter();
-
-  Hive.registerAdapter(AnimeAdapter());
-  await Hive.openBox<Anime>('animeBox');
-
+  sqfliteFfiInit();
+  databaseFactory = databaseFactoryFfi;
   runApp(const MyApp());
 }
 
-void saveAnime(Anime anime) async {
-  final box = Hive.box<Anime>('animeBox');
-  await box.add(anime);
-  print('保存された件数: ${box.length}'); // 件数を表示
+/*
+void showEditDialog(BuildContext context, Anime anime, int index) {
+  final titleController = TextEditingController(text: anime.title);
+  final musicController = TextEditingController(text: anime.musicTitle);
+  final urlController = TextEditingController(text: anime.youtubeUrl);
+  final imageController = TextEditingController(text: anime.imageUrl);
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('アニメ情報を編集'),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(controller: titleController, decoration: InputDecoration(labelText: 'タイトル')),
+              TextField(controller: musicController, decoration: InputDecoration(labelText: '主題歌')),
+              TextField(controller: urlController, decoration: InputDecoration(labelText: 'YouTube URL')),
+              TextField(controller: imageController, decoration: InputDecoration(labelText: '画像 URL')),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text('キャンセル'),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          ElevatedButton(
+            child: Text('保存'),
+            onPressed: () async {
+              final anime = Anime(
+                title: titleController.text, // 元の日時を維持
+                musicTitle: musicController.text,
+                youtubeUrl: urlController.text,
+                imageUrl: imageController.text,
+              );
+              Navigator.of(context).pop(); // ダイアログを閉じる
+            },
+          ),
+        ],
+      );
+    },
+  );
 }
+*/
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

@@ -3,13 +3,30 @@ import 'package:flutter_application_1/project/anime.dart';
 import 'package:flutter_application_1/project/anime_list_page.dart';
 import 'package:flutter_application_1/project/anime_detail.dart';
 
+void main() {
+  runApp(Main());
+}
 
 class Main extends StatelessWidget {
-  final Anime sampleAnime = Anime(
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'アニメ管理アプリ',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MainScreen(),
+    );
+  }
+}
+
+class MainScreen extends StatelessWidget {
+  final anime = Anime(
     title: '鬼滅の刃',
-    airDate: DateTime(2025, 5, 15, 22, 0),
+    airDate: DateTime.now(),
     musicTitle: '紅蓮華',
     youtubeUrl: 'https://youtube.com/',
+    imageUrl: '',
   );
 
   @override
@@ -22,9 +39,6 @@ class Main extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("アニメタイトル: ${sampleAnime.title}"),
-            Text("主題歌: ${sampleAnime.musicTitle}"),
-            Text("放送日時: ${sampleAnime.airDate.toLocal()}"),
             SizedBox(height: 20),
             TextButton(
               child: Text("アニメ追加"),
@@ -38,15 +52,14 @@ class Main extends StatelessWidget {
               },
             ),
             TextButton(
+              child: Text("一覧表"),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => AnimeListPage1(),
-                  )
-                );
-              }, 
-              child: Text("アニメ一覧")),
+                  MaterialPageRoute(builder: (context) => AnimeListPage1()),
+                ).then((_) => loadAnimeList());
+              },
+            ),
           ],
         ),
       ),
