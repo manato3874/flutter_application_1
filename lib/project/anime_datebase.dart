@@ -4,6 +4,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'anime.dart';
 
+final List<String> genreOptions = ['SF', '恋愛', 'ホラー', '日常', 'ファンタジー'];
+
 class AnimeDatabase {
   static Database? _database;
 
@@ -30,12 +32,15 @@ class AnimeDatabase {
             musicTitle TEXT,
             youtubeUrl TEXT,
             imageUrl TEXT,
-            airDate TEXT
+            airDate TEXT,
+            genre TEXT
           )
         ''');
       },
     );
   }
+
+  
 
   static Future<List<Anime>> getAnimeList() async {
     final db = await database;
@@ -48,6 +53,7 @@ class AnimeDatabase {
         musicTitle: maps[i]['musicTitle'],
         youtubeUrl: maps[i]['youtubeUrl'],
         imageUrl: maps[i]['imageUrl'],
+        genre: maps[i]['genre'],
       );
     });
   }

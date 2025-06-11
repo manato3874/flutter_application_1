@@ -17,6 +17,8 @@ class _EditAnimePageState extends State<EditAnimePage> {
   late TextEditingController youtubeUrlController;
   late TextEditingController imageUrlController;
   late DateTime airDate;
+  late TextEditingController genreController;
+  String currentImageUrl = '';
 
   @override
   void initState() {
@@ -25,7 +27,15 @@ class _EditAnimePageState extends State<EditAnimePage> {
     musicController = TextEditingController(text: widget.anime.musicTitle);
     youtubeUrlController = TextEditingController(text: widget.anime.youtubeUrl);
     imageUrlController = TextEditingController(text: widget.anime.imageUrl);
+    genreController = TextEditingController(text: widget.anime.genre);
     airDate = widget.anime.airDate;
+    currentImageUrl = widget.anime.imageUrl;
+
+    imageUrlController.addListener(() {
+      setState(() {
+        currentImageUrl = imageUrlController.text;
+      });
+    });
   }
 
   @override
@@ -37,76 +47,99 @@ class _EditAnimePageState extends State<EditAnimePage> {
     super.dispose();
   }
 
-
   Future<void> _save() async {
     final updatedAnime = Anime(
-      id: widget.anime.id, // IDはそのまま
+      id: widget.anime.id,
       title: titleController.text,
       airDate: airDate,
       musicTitle: musicController.text,
       youtubeUrl: youtubeUrlController.text,
       imageUrl: imageUrlController.text,
+      genre:  genreController.text,
     );
 
     await AnimeDatabase.updateAnime(updatedAnime);
-    Navigator.pop(context); // 戻る
+    Navigator.pop(context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('アニメを編集')),
-      body: Padding(
+      body: ListView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: InputDecoration(labelText: '作品名'),
-              keyboardType: TextInputType.text,
-            ),
-            TextField(
-              controller: musicController,
-              decoration: InputDecoration(labelText: '音楽名'),
-              keyboardType: TextInputType.text,
-            ),
-            TextField(
-              controller: youtubeUrlController,
-              decoration: InputDecoration(labelText: 'YoutubeURL'),
-              keyboardType: TextInputType.text,
-            ),
-            TextField(
-              controller: imageUrlController,
-              decoration: InputDecoration(labelText: '画像URL'),
-              keyboardType: TextInputType.text,
+        children: [
+          _buildTextField(controller: titleController, label: '作品名'),
+          _buildTextField(controller: musicController, label: '音楽名'),
+          _buildTextField(controller: youtubeUrlController, label: 'YouTube URL'),
+          _buildTextField(controller: imageUrlController, label: '画像URL'),
+          _buildTextField(controller: genreController, label: 'ジャンル'),
+          const SizedBox(height: 16),
+
+          if (currentImageUrl.isNotEmpty)
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: 200,
+                    maxWidth: MediaQuery.of(context).size.width * 0.9,
+                  ),
+                  child: Image.network(
+                    currentImageUrl,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      color: Colors.grey[300],
+                      padding: EdgeInsets.all(16),
+                      child: Text('画像を読み込めません'),
+                    ),
+                  ),
+                ),
+              ),
             ),
 
-
-
-
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () async {
-                final picked = await showDatePicker(
-                  context: context,
-                  initialDate: airDate,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2100),
-                );
-                if (picked != null) {
-                  setState(() {
-                    airDate = picked;
-                  });
-                }
-              },
-              child: Text("放送日を選択：${airDate.toLocal().toIso8601String().split("T")[0]}"),
+          /*
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () async {
+              final picked = await showDatePicker(
+                context: context,
+                initialDate: airDate,
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (picked != null) {
+                setState(() {
+                  airDate = picked;
+                });
+              }
+            },
+            icon: Icon(Icons.date_range),
+            label: Text('放送日を選択：${airDate.toLocal().toIso8601String().split("T")[0]}'),
+          ),
+          */
+          const SizedBox(height: 24),
+          ElevatedButton(
+            onPressed: _save,
+            child: Text("保存"),
+            style: ElevatedButton.styleFrom(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              textStyle: TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _save,
-              child: Text("保存"),
-            ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({required TextEditingController controller, required String label}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(),
         ),
       ),
     );

@@ -5,6 +5,7 @@ class Anime {
   final String musicTitle;
   final String youtubeUrl;
   final String imageUrl;
+  final String genre;
 
   Anime({
     this.id,
@@ -13,6 +14,7 @@ class Anime {
     required this.musicTitle,
     required this.youtubeUrl,
     required this.imageUrl,
+    required this.genre,
   });
 
   Map<String, dynamic> toJson() {
@@ -23,6 +25,7 @@ class Anime {
       'musicTitle': musicTitle,
       'youtubeUrl': youtubeUrl,
       'imageUrl': imageUrl,
+      'genre': genre,
     };
   }
 
@@ -34,6 +37,7 @@ class Anime {
       musicTitle: json['musicTitle'],
       youtubeUrl: json['youtubeUrl'],
       imageUrl: json['imageUrl'],
+      genre: json['genre'] ?? 'select null',
     );
   }
 }
