@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/project/anime.dart';
 import 'package:flutter_application_1/project/anime_list_page.dart';
 import 'package:flutter_application_1/project/anime_detail.dart';
+import 'package:flutter_application_1/project/playlist_list.dart';
 
 void main() {
   runApp(Main());
@@ -68,6 +69,19 @@ class MainScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => AnimeListPage1()
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              AnimeButton(
+                icon: Icons.list,
+                label: "アニメリスト一覧",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PlaylistListPage()
                     ),
                   );
                 },

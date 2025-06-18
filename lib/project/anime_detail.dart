@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/project/anime_datebase.dart';
 import 'anime.dart';
 import 'edit.dart';
+import 'playlist.dart';
 //import 'dart:convert';
 //import 'dart:io' as io;
 //import 'package:path_provider/path_provider.dart';
@@ -46,6 +47,41 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
     );
   }
 
+void _showAddToPlaylistDialog(Anime anime) async {
+  List<Playlist> playlists = await AnimeDatabase.getAllPlaylists();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('プレイリストに追加'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: ListView.builder(
+            shrinkWrap: true,
+            itemCount: playlists.length,
+            itemBuilder: (context, index) {
+              final playlist = playlists[index];
+              return ListTile(
+                title: Text(playlist.name),
+                onTap: () async {
+                  // プレイリストIDをアニメに設定し、更新
+                  anime.playlistId = playlist.id;
+                  await AnimeDatabase.updateAnime(anime);
+
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${playlist.name} に追加しました')),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      );
+    },
+  );
+}
 
 
   Future<void> _loadAnimeList() async {
@@ -170,7 +206,15 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
                                   );
                                 }
                               },
+                            ),
 
+                            ListTile(
+                              leading: Icon(Icons.playlist_add),
+                              title: Text('リスト追加(開発中)'),
+                              onTap: () {
+                                Navigator.pop(context);
+                                _showAddToPlaylistDialog(anime);
+                              },
                             ),
                           ],
                         ),

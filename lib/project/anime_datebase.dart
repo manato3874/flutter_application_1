@@ -3,6 +3,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'anime.dart';
+import 'playlist.dart';
+
 
 
 class AnimeDatabase {
@@ -20,11 +22,22 @@ class AnimeDatabase {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'anime.db');
 
+    await deleteDatabase(path); // ← 開発用なので後で消す！
+
+
     return await openDatabase(
       path,
       version: 1,
       onCreate: (Database db, int version) async {
-        return db.execute('''
+
+        await db.execute('''
+          CREATE TABLE playlists (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT
+          )
+        ''');
+
+        await db.execute('''
           CREATE TABLE anime (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
@@ -32,7 +45,9 @@ class AnimeDatabase {
             youtubeUrl TEXT,
             imageUrl TEXT,
             airDate TEXT,
-            genre TEXT
+            genre TEXT,
+            playlistId INTEGER,
+            FOREIGN KEY (playlistId) REFERENCES playlists(id)
           )
         ''');
       },
@@ -63,6 +78,7 @@ class AnimeDatabase {
     return await db.insert('anime', anime.toJson());
   }
 
+
   // 全件取得
   static Future<List<Anime>> getAllAnime() async {
     final db = await database;
@@ -90,4 +106,44 @@ class AnimeDatabase {
       whereArgs: [id],
     );
   }
+
+
+static Future<List<Anime>> getAnimeByPlaylistId(int playlistId) async {
+  final db = await database;
+  final maps = await db.query(
+    'anime',
+    where: 'playlistId = ?',
+    whereArgs: [playlistId],
+  );
+  return maps.map((map) => Anime.fromJson(map)).toList();
 }
+
+
+
+
+
+// プレイリスト追加
+static Future<int> insertPlaylist(Playlist playlist) async {
+  final db = await database;
+  return await db.insert('playlists', playlist.toJson());
+}
+
+// プレイリスト削除（アニメも一緒に削除したいなら追加処理要）
+static Future<void> deletePlaylist(int id) async {
+  final db = await database;
+  await db.delete(
+    'playlists',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
+
+static Future<List<Playlist>> getAllPlaylists() async {
+  final db = await database;
+  final result = await db.query('playlists');
+  return result.map((e) => Playlist.fromJson(e)).toList();
+}
+
+}
+
+
