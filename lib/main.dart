@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 //import 'package:flutter_application_1/HomePage.dart';
 import 'package:flutter_application_1/project/Main.dart';
+//import 'package:flutter_application_1/project/anime_delete.dart';
 //import 'package:flutter_application_1/submission/Main.dart';
 
 void main() async {

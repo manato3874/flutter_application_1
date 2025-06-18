@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/project/anime.dart';
 import 'package:flutter_application_1/project/anime_export.dart';
 import 'package:flutter_application_1/project/anime_datebase.dart';
+import 'package:flutter_application_1/project/modelsheet.dart'; // showGenreSelectorModalがここにある前提
 import 'dart:convert';
 import 'dart:io' as io;
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart';
-
-String? _selectedGenre;
 
 class AnimeListPage extends StatefulWidget {
   @override
@@ -21,6 +21,9 @@ class _AnimeListPageState extends State<AnimeListPage> {
   final pickedImageController = TextEditingController();
   final genreController = TextEditingController();
 
+  String? selectedGenre;
+  List<String> _genres = ['アクション', '恋愛', 'ホラー', 'コメディ'];
+
   Future<void> _addAnime() async {
     final anime = Anime(
       title: titleController.text,
@@ -28,7 +31,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
       musicTitle: musicController.text,
       youtubeUrl: urlController.text,
       imageUrl: pickedImageController.text,
-      genre: genreController.text
+      genre: genreController.text,
     );
 
     await AnimeDatabase.insertAnime(anime);
@@ -38,11 +41,50 @@ class _AnimeListPageState extends State<AnimeListPage> {
       musicController.clear();
       urlController.clear();
       pickedImageController.clear();
+      genreController.clear();
+      selectedGenre = null;
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('アニメを保存しました')),
     );
+  }
+
+  Future<void> _openGenreModal() async {
+    final genre = await showGenreSelectorModal(context, _genres);
+    if (genre != null && !_genres.contains(genre)) {
+      setState(() {
+        _genres.add(genre);
+      });
+    }
+    setState(() {
+      selectedGenre = genre;
+      genreController.text = genre ?? '';
+    });
+  }
+
+  Future<String?> pickImageFromGallery() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      return image.path; // ストレージ内のパスを返す
+    }
+
+    return null;
+  }
+
+  Widget displayImage(String imageUrl) {
+    if (imageUrl.startsWith('http')) {
+      return Image.network(imageUrl); // URLならネット画像
+    } else {
+      return Image.file(
+        io.File(imageUrl),
+        width: 200,
+        height: 200,
+        fit: BoxFit.cover,
+        ); // ローカルならFile
+    }
   }
 
   @override
@@ -68,17 +110,33 @@ class _AnimeListPageState extends State<AnimeListPage> {
                     SizedBox(height: 10),
                     _buildTextField(pickedImageController, "画像URL", Icons.image),
                     SizedBox(height: 10),
-                    DropdownButtonFormField<String>(
-                      value: _selectedGenre,
-                      decoration: InputDecoration(labelText: 'ジャンル'),
-                      items: genreOptions
-                          .map((genre) => DropdownMenuItem(value: genre, child: Text(genre)))
-                          .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedGenre = value!;
-                        });
+                    // 選んだ画像のプレビューを表示
+                    if (pickedImageController.text.isNotEmpty)
+                      displayImage(pickedImageController.text),
+                    SizedBox(height: 5 ,width: 5),
+                    // ギャラリーから画像を選ぶボタン
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.photo),
+                      label: Text("画像を選ぶ（ストレージから）"),
+                      onPressed: () async {
+                        final imagePath = await pickImageFromGallery();
+                        if (imagePath != null) {
+                          setState(() {
+                            pickedImageController.text = imagePath;
+                          });
+                        }
                       },
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: _openGenreModal,
+                      icon: Icon(Icons.category),
+                      label: Text(selectedGenre ?? 'ジャンルを選ぶ'),
+                      style: ElevatedButton.styleFrom(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
                     ),
                     SizedBox(height: 20),
                     ElevatedButton.icon(
@@ -92,7 +150,6 @@ class _AnimeListPageState extends State<AnimeListPage> {
                         foregroundColor: Colors.white,
                       ),
                     ),
-
                   ],
                 ),
               ),

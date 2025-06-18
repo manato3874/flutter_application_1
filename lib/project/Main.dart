@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/project/anime.dart';
 import 'package:flutter_application_1/project/anime_list_page.dart';
 import 'package:flutter_application_1/project/anime_detail.dart';
-import 'package:flutter_application_1/project/modelsheet.dart';
 
 void main() {
   runApp(Main());

@@ -4,7 +4,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'anime.dart';
 
-final List<String> genreOptions = ['SF', '恋愛', 'ホラー', '日常', 'ファンタジー'];
 
 class AnimeDatabase {
   static Database? _database;
@@ -25,7 +24,7 @@ class AnimeDatabase {
       path,
       version: 1,
       onCreate: (Database db, int version) async {
-        await db.execute('''
+        return db.execute('''
           CREATE TABLE anime (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,

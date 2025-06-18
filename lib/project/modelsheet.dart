@@ -1,83 +1,70 @@
 import 'package:flutter/material.dart';
 
-class GenreSelectorModal extends StatefulWidget {
-  @override
-  _GenreSelectorModalState createState() => _GenreSelectorModalState();
-}
+Future<String?> showGenreSelectorModal(BuildContext context, List<String> genres) async {
+  final newGenreController = TextEditingController();
+  List<String> genreList = List.from(genres);
+  String? errorText;
 
-class _GenreSelectorModalState extends State<GenreSelectorModal> {
-  String? selectedGenre;
-  List<String> _genres = ['アクション', '恋愛', 'ホラー', 'コメディ'];
-
-void _openGenreModal() async {
-  final result = await showModalBottomSheet<String>(
+  return await showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
     builder: (context) {
-      List<String> genres = List.from(_genres); // 既存ジャンル（状態管理のためコピー）
-      final newGenreController = TextEditingController();
-
       return StatefulBuilder(
         builder: (context, setStateModal) => Padding(
-          padding: MediaQuery.of(context).viewInsets, // キーボード対策
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              for (var genre in genres)
-                ListTile(
-                  title: Text(genre),
-                  onTap: () => Navigator.pop(context, genre),
-                ),
-              Divider(),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: newGenreController,
-                  decoration: InputDecoration(
-                    labelText: '新しいジャンルを追加',
-                    suffixIcon: IconButton(
-                      icon: Icon(Icons.add),
-                      onPressed: () {
-                        final newGenre = newGenreController.text.trim();
-                        if (newGenre.isNotEmpty && !genres.contains(newGenre)) {
-                          setStateModal(() {
-                            genres.add(newGenre);
-                            _genres.add(newGenre); // 外のジャンルリストも更新
-                          });
+              Text('ジャンルを選択または追加',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 10),
+              TextField(
+                controller: newGenreController,
+                decoration: InputDecoration(
+                  labelText: '新しいジャンルを追加',
+                  errorText: errorText,
+                  suffixIcon: IconButton(
+                    icon: Icon(Icons.add),
+                    onPressed: () {
+                      final newGenre = newGenreController.text.trim();
+                      if (newGenre.isEmpty) {
+                        setStateModal(() {
+                          errorText = 'ジャンルを入力してください';
+                        });
+                      } else if (genreList.contains(newGenre)) {
+                        setStateModal(() {
+                          errorText = '既に存在しています';
+                        });
+                      } else {
+                        setStateModal(() {
+                          genreList.add(newGenre);
                           newGenreController.clear();
-                        }
-                      },
-                    ),
+                          errorText = null;
+                        });
+                      }
+                    },
                   ),
                 ),
               ),
+              Divider(),
+              ...genreList.map((genre) => ListTile(
+                    leading: Icon(Icons.label_outline),
+                    title: Text(genre),
+                    onTap: () => Navigator.pop(context, genre),
+                  )),
+              SizedBox(height: 20),
             ],
           ),
         ),
       );
     },
   );
-
-  if (result != null) {
-    setState(() {
-      selectedGenre = result;
-    });
-  }
-}
-
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('ジャンル', style: TextStyle(fontSize: 16)),
-        SizedBox(height: 8),
-        ElevatedButton(
-          onPressed: _openGenreModal,
-          child: Text(selectedGenre ?? 'ジャンルを選択'),
-        ),
-      ],
-    );
-  }
 }
