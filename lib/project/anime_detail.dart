@@ -207,12 +207,12 @@ void _showAddToPlaylistDialog(Anime anime) async {
                                 }
                               },
                             ),
-
                             ListTile(
                               leading: Icon(Icons.playlist_add),
                               title: Text('リスト追加(開発中)'),
                               onTap: () {
                                 Navigator.pop(context);
+                                
                                 _showAddToPlaylistDialog(anime);
                               },
                             ),
