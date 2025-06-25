@@ -22,7 +22,7 @@ class AnimeDatabase {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, 'anime.db');
 
-    await deleteDatabase(path); // ← 開発用なので後で消す！
+    //await deleteDatabase(path); // ← 開発用なので後で消す！
 
 
     return await openDatabase(
@@ -73,10 +73,14 @@ class AnimeDatabase {
   }
 
   // アニメを追加
+  // insertAnimeではidを使わないように（自動で生成される）
   static Future<int> insertAnime(Anime anime) async {
     final db = await database;
-    return await db.insert('anime', anime.toJson());
+    final data = anime.toJson();
+    data.remove('id'); // 明示的にidを除外
+    return await db.insert('anime', data);
   }
+
 
 
   // 全件取得

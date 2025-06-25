@@ -4,6 +4,7 @@ import 'anime.dart';
 import 'anime_datebase.dart';
 import 'playlist.dart';
 import 'dart:io' as io;
+import 'package:url_launcher/url_launcher.dart';
 
 class AnimeListByPlaylistPage extends StatefulWidget {
   final Playlist playlist;
@@ -44,6 +45,16 @@ class _AnimeListByPlaylistPageState extends State<AnimeListByPlaylistPage> {
                 : Icon(Icons.image_not_supported),
             title: Text(anime.title),
             subtitle: Text(anime.musicTitle),
+            onTap: () async {
+              final url = Uri.parse(anime.youtubeUrl);
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('URLを開けませんでした')),
+                );
+              }
+            },
           );
         },
       ),

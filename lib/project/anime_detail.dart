@@ -4,7 +4,7 @@ import 'anime.dart';
 import 'edit.dart';
 import 'playlist.dart';
 //import 'dart:convert';
-//import 'dart:io' as io;
+import 'dart:io' as io;
 //import 'package:path_provider/path_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
@@ -47,42 +47,54 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
     );
   }
 
-void _showAddToPlaylistDialog(Anime anime) async {
-  List<Playlist> playlists = await AnimeDatabase.getAllPlaylists();
+  void _showAddToPlaylistDialog(Anime anime) async {
+    List<Playlist> playlists = await AnimeDatabase.getAllPlaylists();
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: Text('プレイリストに追加'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: ListView.builder(
-            shrinkWrap: true,
-            itemCount: playlists.length,
-            itemBuilder: (context, index) {
-              final playlist = playlists[index];
-              return ListTile(
-                title: Text(playlist.name),
-                onTap: () async {
-                  // プレイリストIDをアニメに設定し、更新
-                  anime.playlistId = playlist.id;
-                  await AnimeDatabase.updateAnime(anime);
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('プレイリストに追加'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: playlists.length,
+              itemBuilder: (context, index) {
+                final playlist = playlists[index];
+                return ListTile(
+                  title: Text(playlist.name),
+                  onTap: () async {
+                    // プレイリストIDをアニメに設定し、更新
+                    anime.playlistId = playlist.id;
+                    await AnimeDatabase.updateAnime(anime);
 
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${playlist.name} に追加しました')),
-                  );
-                },
-              );
-            },
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('${playlist.name} に追加しました')),
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
+  Widget displayImage(String imageUrl) {
+    if (imageUrl.startsWith('http')) {
+      return Image.network(imageUrl); // URLならネット画像
+    } else {
+      return Image.file(
+        io.File(imageUrl),
+        width: 200,
+        height: 200,
+        fit: BoxFit.cover,
+        ); // ローカルならFile
+    }
+  }
 
   Future<void> _loadAnimeList() async {
     final list = await AnimeDatabase.getAllAnime();
@@ -99,26 +111,26 @@ void _showAddToPlaylistDialog(Anime anime) async {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-  child: Icon(Icons.add),
-  onPressed: () {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        child: Icon(Icons.add),
+        onPressed: () {
+          showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (context) => Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: AddAnimeForm(onAdd: (anime) {
+                AnimeDatabase.insertAnime(anime).then((_) => _loadAnimeList());
+                Navigator.pop(context); // モーダルを閉じる
+              }),
+            ),
+          );
+        },
       ),
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-        ),
-        child: AddAnimeForm(onAdd: (anime) {
-          AnimeDatabase.insertAnime(anime).then((_) => _loadAnimeList());
-          Navigator.pop(context); // モーダルを閉じる
-        }),
-      ),
-    );
-  },
-),
 
       appBar: AppBar(title: Text('保存したアニメ一覧')),
       body: animeList.isEmpty
@@ -138,15 +150,13 @@ void _showAddToPlaylistDialog(Anime anime) async {
                     contentPadding: EdgeInsets.all(12),
                     leading: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        anime.imageUrl,
+                      child: SizedBox(
                         width: 60,
                         height: 60,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Icon(Icons.image_not_supported, size: 60),
+                        child: displayImage(anime.imageUrl),
                       ),
                     ),
+                    
                     title: Text(
                       anime.title,
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),

@@ -20,8 +20,7 @@ class Anime {
   });
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final map = {
       'title': title,
       'airDate': airDate.toIso8601String(),
       'musicTitle': musicTitle,
@@ -30,6 +29,12 @@ class Anime {
       'genre': genre,
       'playlistId': playlistId,
     };
+
+    if (id != null){
+      map['id'] = id;
+    }
+
+    return map;
   }
 
   factory Anime.fromJson(Map<String, dynamic> json) {

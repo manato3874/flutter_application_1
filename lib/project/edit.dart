@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'anime.dart';
 import 'anime_datebase.dart';
+import 'dart:io' as io;
 
 class EditAnimePage extends StatefulWidget {
   final Anime anime;
@@ -62,6 +63,19 @@ class _EditAnimePageState extends State<EditAnimePage> {
     Navigator.pop(context);
   }
 
+  Widget displayImage(String imageUrl) {
+    if (imageUrl.startsWith('http')) {
+      return Image.network(imageUrl); // URLならネット画像
+    } else {
+      return Image.file(
+        io.File(imageUrl),
+        width: 200,
+        height: 200,
+        fit: BoxFit.cover,
+        ); // ローカルならFile
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,18 +99,11 @@ class _EditAnimePageState extends State<EditAnimePage> {
                     maxHeight: 200,
                     maxWidth: MediaQuery.of(context).size.width * 0.9,
                   ),
-                  child: Image.network(
-                    currentImageUrl,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      color: Colors.grey[300],
-                      padding: EdgeInsets.all(16),
-                      child: Text('画像を読み込めません'),
-                    ),
-                  ),
+                  child: displayImage(currentImageUrl), // ← ここを差し替え！
                 ),
               ),
             ),
+
 
           /*
           const SizedBox(height: 24),
