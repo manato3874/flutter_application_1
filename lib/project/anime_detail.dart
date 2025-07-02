@@ -107,6 +107,64 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
     return DateFormat('yyyy年M月d日').format(date);
   }
 
+  String extractYouTubeVideoId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return '';
+
+    // パターン1: https://www.youtube.com/watch?v=xxxx
+    if (uri.host.contains('youtube.com') && uri.queryParameters.containsKey('v')) {
+      return uri.queryParameters['v'] ?? '';
+    }
+
+    // パターン2: https://youtu.be/xxxx
+    if (uri.host.contains('youtu.be')) {
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
+    }
+
+    return '';
+  }
+
+    // サムネイル画像を表示するウィジェット
+  Widget buildYouTubeThumbnail(String youtubeUrl) {
+    final videoId = extractYouTubeVideoId(youtubeUrl);
+    if (videoId.isEmpty) {
+      return const Text('不正なYouTube URL');
+    }
+
+    final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: 200,
+          maxWidth: 300
+        ),
+        child: Image.network(
+          thumbnailUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) => const Text('画像を読み込めません'),
+        ),
+      ),
+    );
+  }
+
+  Widget buildLeading(String imageUrl) {
+    if (imageUrl.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: SizedBox(
+          width: 60,
+          height: 60,
+          child: displayImage(imageUrl),
+        ),
+      );
+    } else {
+      return Icon(Icons.image_not_supported, size: 60);
+    }
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -148,14 +206,9 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.all(12),
-                    leading: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: SizedBox(
-                        width: 60,
-                        height: 60,
-                        child: displayImage(anime.imageUrl),
-                      ),
-                    ),
+                    leading: anime.imageUrl.isNotEmpty ?
+                    buildLeading(anime.imageUrl)
+                    :buildYouTubeThumbnail(anime.youtubeUrl),
                     
                     title: Text(
                       anime.title,

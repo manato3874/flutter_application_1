@@ -76,6 +76,88 @@ class _EditAnimePageState extends State<EditAnimePage> {
     }
   }
 
+  String extractYouTubeVideoId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return '';
+
+    // パターン1: https://www.youtube.com/watch?v=xxxx
+    if (uri.host.contains('youtube.com') && uri.queryParameters.containsKey('v')) {
+      return uri.queryParameters['v'] ?? '';
+    }
+
+    // パターン2: https://youtu.be/xxxx
+    if (uri.host.contains('youtu.be')) {
+      return uri.pathSegments.isNotEmpty ? uri.pathSegments.first : '';
+    }
+
+    return '';
+  }
+
+  // サムネイル画像を表示するウィジェット
+  Widget buildYouTubeThumbnail(String youtubeUrl) {
+    final videoId = extractYouTubeVideoId(youtubeUrl);
+    if (videoId.isEmpty) {
+      return const Text('不正なYouTube URL');
+    }
+
+    final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: Image.network(
+        thumbnailUrl,
+        height: 200,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) => const Text('画像を読み込めません'),
+      ),
+    );
+  }
+
+  Widget _buildYoutubeThumbnailFromUrl(String youtubeUrl) {
+  final videoId = extractYouTubeVideoId(youtubeUrl);
+  if (videoId.isEmpty) return SizedBox();
+
+  final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+
+  return Center(
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: 200,
+          maxWidth: 300,
+        ),
+        child: Image.network(
+          thumbnailUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) =>
+              Text('サムネイル読み込み失敗'),
+        ),
+      ),
+    ),
+  );
+}
+
+  Widget _buildImagePreview(String imageUrl) {
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: 200,
+            maxWidth: 300,
+          ),
+          child: Image.network(
+            imageUrl,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                Text('画像読み込み失敗'),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -91,18 +173,9 @@ class _EditAnimePageState extends State<EditAnimePage> {
           const SizedBox(height: 16),
 
           if (currentImageUrl.isNotEmpty)
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: 200,
-                    maxWidth: MediaQuery.of(context).size.width * 0.9,
-                  ),
-                  child: displayImage(currentImageUrl), // ← ここを差し替え！
-                ),
-              ),
-            ),
+            _buildImagePreview(currentImageUrl)
+          else if(youtubeUrlController.text.isNotEmpty)
+            _buildYoutubeThumbnailFromUrl(youtubeUrlController.text),
 
 
           /*
