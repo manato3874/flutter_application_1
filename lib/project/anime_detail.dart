@@ -137,7 +137,7 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
       child: ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: 200,
-          maxWidth: 300
+          maxWidth: 300,
         ),
         child: Image.network(
           thumbnailUrl,

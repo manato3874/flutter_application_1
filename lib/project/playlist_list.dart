@@ -11,6 +11,8 @@ class PlaylistListPage extends StatefulWidget {
 
 class _PlaylistListPageState extends State<PlaylistListPage> {
   List<Playlist> playlists = [];
+  Map<int, int> animeCountMap = {}; // playlistId → アニメ数
+
 
   @override
   void initState() {
@@ -20,10 +22,26 @@ class _PlaylistListPageState extends State<PlaylistListPage> {
 
   Future<void> fetchPlaylists() async {
     final data = await AnimeDatabase.getAllPlaylists();
+    Map<int, int> countMap = {};
+    for (final playlist in data) {
+      final list = await AnimeDatabase.getAnimeByPlaylistId(playlist.id!);
+      countMap[playlist.id!] = list.length;
+    }
+
     setState(() {
       playlists = data;
+      animeCountMap = countMap;
     });
   }
+
+/*
+    Future<void> fetchAnime() async {
+    final list = await AnimeDatabase.getAnimeByPlaylistId(widget.animeLists.id!);
+    setState(() {
+      animeList = list;
+    });
+  }
+*/
 
   Future<void> _addPlaylistDialog() async {
     String newName = '';
@@ -57,22 +75,30 @@ class _PlaylistListPageState extends State<PlaylistListPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(title: Text('プレイリスト')),
       body: ListView.builder(
         itemCount: playlists.length,
         itemBuilder: (context, index) {
           final playlist = playlists[index];
-          return ListTile(
-            title: Text(playlist.name),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AnimeListByPlaylistPage(playlist: playlist),
-                ),
-              );
-            },
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            elevation: 3,
+            child:  ListTile(
+              title: Text(playlist.name),
+              subtitle: Text('${animeCountMap[playlist.id] ?? 0} 件のアニメ'),
+              trailing: Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => AnimeListByPlaylistPage(playlist: playlist),
+                  ),
+                );
+              },
+            )
           );
         },
       ),

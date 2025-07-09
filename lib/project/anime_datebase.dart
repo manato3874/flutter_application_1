@@ -33,7 +33,7 @@ class AnimeDatabase {
         await db.execute('''
           CREATE TABLE playlists (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT
+            name TEXT 
           )
         ''');
 
@@ -129,7 +129,9 @@ static Future<List<Anime>> getAnimeByPlaylistId(int playlistId) async {
 // プレイリスト追加
 static Future<int> insertPlaylist(Playlist playlist) async {
   final db = await database;
-  return await db.insert('playlists', playlist.toJson());
+  final id = await db.insert('playlists', playlist.toJson());
+  playlist.id = id; // ← これが抜けていると、playlist.id は null のまま
+  return id;
 }
 
 // プレイリスト削除（アニメも一緒に削除したいなら追加処理要）

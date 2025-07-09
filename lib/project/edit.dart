@@ -147,11 +147,8 @@ class _EditAnimePageState extends State<EditAnimePage> {
             maxHeight: 200,
             maxWidth: 300,
           ),
-          child: Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                Text('画像読み込み失敗'),
+          child: SizedBox(
+            child: displayImage(imageUrl),
           ),
         ),
       ),
