@@ -28,7 +28,7 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('削除の確認'),
-        content: Text('このアニメを削除してもよろしいですか？'),
+        content: Text('削除してもよろしいですか？'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -190,7 +190,7 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
         },
       ),
 
-      appBar: AppBar(title: Text('保存したアニメ一覧')),
+      appBar: AppBar(title: Text('保存一覧')),
       body: animeList.isEmpty
           ? Center(child: Text("データがありません"))
           : ListView.builder(
@@ -318,7 +318,7 @@ class _AddAnimeFormState extends State<AddAnimeForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text("アニメ追加", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("追加", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             TextField(controller: _titleController, decoration: InputDecoration(labelText: '作品名')),
             TextField(controller: _musicController, decoration: InputDecoration(labelText: '音楽名')),
             TextField(controller: _youtubeUrlController, decoration: InputDecoration(labelText: 'YouTube URL')),

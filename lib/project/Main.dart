@@ -13,7 +13,7 @@ class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'アニメ管理アプリ',
+      title: '管理アプリ',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
@@ -41,7 +41,7 @@ class MainScreen extends StatelessWidget {
           children: [
             Icon(Icons.home),
             SizedBox(width: 8),
-            Text("アニメ管理ホーム"),
+            Text("管理ホーム"),
           ],
         ),
       ),
@@ -53,7 +53,7 @@ class MainScreen extends StatelessWidget {
             children: [
               AnimeButton(
                 icon: Icons.add,
-                label: "アニメを追加",
+                label: "新規登録",
                 onTap: () {
                   Navigator.push(
                     context,
@@ -64,7 +64,7 @@ class MainScreen extends StatelessWidget {
               SizedBox(height: 20),
               AnimeButton(
                 icon: Icons.list,
-                label: "アニメ一覧を見る",
+                label: "一覧を見る",
                 onTap: () {
                   Navigator.push(
                     context,

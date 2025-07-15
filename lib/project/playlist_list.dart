@@ -88,7 +88,7 @@ class _PlaylistListPageState extends State<PlaylistListPage> {
             elevation: 3,
             child:  ListTile(
               title: Text(playlist.name),
-              subtitle: Text('${animeCountMap[playlist.id] ?? 0} 件のアニメ'),
+              subtitle: Text('${animeCountMap[playlist.id] ?? 0} 件の作品'),
               trailing: Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.push(

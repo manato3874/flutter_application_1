@@ -158,7 +158,7 @@ class _EditAnimePageState extends State<EditAnimePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('アニメを編集')),
+      appBar: AppBar(title: Text('編集')),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [

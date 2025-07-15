@@ -46,7 +46,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('アニメを保存しました')),
+      SnackBar(content: Text('保存しました')),
     );
   }
 
@@ -90,7 +90,7 @@ class _AnimeListPageState extends State<AnimeListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("アニメ登録")),
+      appBar: AppBar(title: Text("登録")),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
         child: Column(

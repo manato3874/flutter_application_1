@@ -27,7 +27,7 @@ Future<void> exportAnimeDataAsJson() async {
     // ファイルへ書き出し
     await file.writeAsString(jsonString);
 
-    print('✅ アニメデータをエクスポートしました: $filePath');
+    print('✅ データをエクスポートしました: $filePath');
   } catch (e) {
     print('❌ エクスポート中にエラーが発生しました: $e');
   }
