@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/SecondPage.dart';
+import 'package:flutter_application_1/submission/SecondPage.dart';
 
 
 class FirstPage extends StatelessWidget{

@@ -8,6 +8,7 @@ import 'package:flutter_application_1/project/Main.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sqfliteFfiInit();
+  // Windows用の手動登録は不要
   databaseFactory = databaseFactoryFfi;
   runApp(const MyApp());
 }

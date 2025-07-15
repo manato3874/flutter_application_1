@@ -272,7 +272,7 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
                             ),
                             ListTile(
                               leading: Icon(Icons.playlist_add),
-                              title: Text('リスト追加(開発中)'),
+                              title: Text('プレイリストに追加'),
                               onTap: () {
                                 Navigator.pop(context);
                                 

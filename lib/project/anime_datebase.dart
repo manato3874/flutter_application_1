@@ -144,6 +144,17 @@ static Future<void> deletePlaylist(int id) async {
   );
 }
 
+static Future<void> removeAnimeFromPlaylist(int animeId) async {
+  final db = await database;
+  await db.update(
+    'anime',
+    {'playlistId': null},
+    where: 'id = ?',
+    whereArgs: [animeId],
+  );
+}
+
+
 static Future<List<Playlist>> getAllPlaylists() async {
   final db = await database;
   final result = await db.query('playlists');

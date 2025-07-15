@@ -3,6 +3,7 @@ import 'package:flutter_application_1/project/anime.dart';
 import 'package:flutter_application_1/project/anime_list_page.dart';
 import 'package:flutter_application_1/project/anime_detail.dart';
 import 'package:flutter_application_1/project/playlist_list.dart';
+import 'video_widget/video_player_widget.dart';
 
 void main() {
   runApp(Main());
@@ -76,12 +77,25 @@ class MainScreen extends StatelessWidget {
               SizedBox(height: 20),
               AnimeButton(
                 icon: Icons.list,
-                label: "アニメリスト一覧",
+                label: "プレイリスト一覧",
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => PlaylistListPage()
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+              AnimeButton(
+                icon: Icons.list,
+                label: "動画再生",
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => VideoPlayerWidget(videoUrl: "https://www.youtube.com/watch?v=K18cpp_-gP8")
                     ),
                   );
                 },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/FirstPage.dart';
+import 'package:flutter_application_1/submission/FirstPage.dart';
 
 class HomePage extends StatelessWidget{
   @override

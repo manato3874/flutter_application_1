@@ -1,7 +1,7 @@
 // anime_list_by_playlist.dart
 import 'package:flutter/material.dart';
 import 'anime.dart';
-import 'anime_detail.dart';
+import 'edit.dart';
 import 'anime_datebase.dart';
 import 'playlist.dart';
 import 'dart:io' as io;
@@ -133,12 +133,23 @@ class _AnimeListByPlaylistPageState extends State<AnimeListByPlaylistPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         ListTile(
-                          leading: Icon(Icons.playlist_add),
-                          title: Text('リスト追加(開発中)'),
+                          leading: Icon(Icons.edit),
+                          title: Text('編集'),
                           onTap: () {
-                            Navigator.pop(context);
-                            
-                            _showAddToPlaylistDialog(anime);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => EditAnimePage(anime: anime),
+                              ),
+                            );
+                          },
+                        ),
+                        ListTile(
+                          leading: Icon(Icons.delete),
+                          title: Text('プレイリストから削除'),
+                          onTap: () async {
+                            await AnimeDatabase.removeAnimeFromPlaylist(anime.id!);
+                            await fetchAnime(); 
                           },
                         ),
                       ],
