@@ -134,11 +134,9 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
     final thumbnailUrl = 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: 200,
-          maxWidth: 300,
-        ),
+      child: SizedBox(
+        width: 140,
+        height: 100,
         child: Image.network(
           thumbnailUrl,
           fit: BoxFit.cover,
@@ -153,8 +151,8 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
       return ClipRRect(
         borderRadius: BorderRadius.circular(8),
         child: SizedBox(
-          width: 60,
-          height: 60,
+          width: 180,
+          height: 100,
           child: displayImage(imageUrl),
         ),
       );
@@ -204,44 +202,7 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(12),
-                    leading: anime.imageUrl.isNotEmpty ?
-                    buildLeading(anime.imageUrl)
-                    :buildYouTubeThumbnail(anime.youtubeUrl),
-                    
-                    title: Text(
-                      anime.title,
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('${anime.musicTitle}（${formatDate(anime.airDate)}）'),
-                        Text('${anime.genre}'),
-                        GestureDetector(
-                          onTap: () async {
-                            final url = Uri.parse(anime.youtubeUrl);
-                            if (await canLaunchUrl(url)) {
-                              await launchUrl(url, mode: LaunchMode.externalApplication);
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('URLを開けませんでした')),
-                              );
-                            }
-                          },
-
-                          child: Text(
-                            anime.youtubeUrl,
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    trailing: Icon(Icons.arrow_forward_ios),
+                  child: InkWell(
                     onTap: () {
                       Navigator.push(
                         context,
@@ -275,7 +236,6 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
                               title: Text('プレイリストに追加'),
                               onTap: () {
                                 Navigator.pop(context);
-                                
                                 _showAddToPlaylistDialog(anime);
                               },
                             ),
@@ -283,7 +243,70 @@ class _AnimeListPage1State extends State<AnimeListPage1> {
                         ),
                       );
                     },
-
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // 画像 or サムネイル
+                          Container(
+                            width: 150,
+                            height: 90,
+                            child: anime.imageUrl.isNotEmpty
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: AspectRatio(
+                                    aspectRatio: 4/3,
+                                    child: displayImage(anime.imageUrl),
+                                  ),
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: AspectRatio(
+                                    aspectRatio: 4/3,
+                                    child: buildYouTubeThumbnail(anime.youtubeUrl),
+                                  ),
+                                ),
+                          ),
+                          SizedBox(width: 16),
+                          // テキスト情報
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  anime.title,
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                SizedBox(height: 4),
+                                Text('${anime.musicTitle}'),
+                                Text('${anime.genre}'),
+                                GestureDetector(
+                                  onTap: () async {
+                                    final url = Uri.parse(anime.youtubeUrl);
+                                    if (await canLaunchUrl(url)) {
+                                      await launchUrl(url, mode: LaunchMode.externalApplication);
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('URLを開けませんでした')),
+                                      );
+                                    }
+                                  },
+                                  child: Text(
+                                    anime.youtubeUrl,
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Icon(Icons.arrow_forward_ios),
+                        ],
+                      ),
+                    ),
                   ),
                 );
               },

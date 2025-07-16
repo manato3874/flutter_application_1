@@ -202,6 +202,8 @@ class _EditAnimePageState extends State<EditAnimePage> {
             style: ElevatedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: 16),
               textStyle: TextStyle(fontSize: 16),
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.blueAccent,
             ),
           ),
         ],

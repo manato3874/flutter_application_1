@@ -46,90 +46,99 @@ class MainScreen extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              AnimeButton(
-                icon: Icons.add,
-                label: "新規登録",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AnimeListPage()),
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-              AnimeButton(
-                icon: Icons.list,
-                label: "一覧を見る",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AnimeListPage1()
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-              AnimeButton(
-                icon: Icons.list,
-                label: "プレイリスト一覧",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PlaylistListPage()
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 20),
-              AnimeButton(
-                icon: Icons.list,
-                label: "動画再生",
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => VideoPlayerWidget(videoUrl: "https://www.youtube.com/watch?v=K18cpp_-gP8")
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
+        child: ListView(
+          children: [
+            _MainCardButton(
+              icon: Icons.add,
+              label: "新規登録",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AnimeListPage()),
+                );
+              },
+            ),
+            SizedBox(height: 18),
+            _MainCardButton(
+              icon: Icons.list,
+              label: "一覧",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AnimeListPage1()
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 18),
+            _MainCardButton(
+              icon: Icons.library_music,
+              label: "プレイリスト",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => PlaylistListPage()
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 18),
+            _MainCardButton(
+              icon: Icons.play_circle_fill,
+              label: "動画再生",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => VideoPlayerWidget(videoUrl: "https://www.youtube.com/watch?v=K18cpp_-gP8")
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class AnimeButton extends StatelessWidget {
+
+class _MainCardButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
 
-  AnimeButton({required this.icon, required this.label, required this.onTap});
+  const _MainCardButton({required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        icon: Icon(icon),
-        label: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: Text(label, style: TextStyle(fontSize: 18)),
-        ),
-        onPressed: onTap,
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+          child: Row(
+            children: [
+              Icon(icon, size: 40, color: Colors.blueAccent),
+              SizedBox(width: 24),
+              Expanded(
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

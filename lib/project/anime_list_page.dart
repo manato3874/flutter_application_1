@@ -116,8 +116,8 @@ class _AnimeListPageState extends State<AnimeListPage> {
                     SizedBox(height: 5 ,width: 5),
                     // ギャラリーから画像を選ぶボタン
                     ElevatedButton.icon(
-                      icon: Icon(Icons.photo),
-                      label: Text("画像を選ぶ（ストレージから）"),
+                      icon: Icon(Icons.photo, color: Colors.blueAccent),
+                      label: Text("画像を選ぶ（ストレージから）", style: TextStyle(color: Colors.blueAccent)),
                       onPressed: () async {
                         final imagePath = await pickImageFromGallery();
                         if (imagePath != null) {
@@ -129,10 +129,12 @@ class _AnimeListPageState extends State<AnimeListPage> {
                     ),
                     ElevatedButton.icon(
                       onPressed: _openGenreModal,
-                      icon: Icon(Icons.category),
+                      icon: Icon(Icons.category, color: Colors.blueAccent),
                       label: Text(selectedGenre ?? 'ジャンルを選ぶ'),
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        foregroundColor: Colors.blueAccent,
+                        elevation: 2,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -140,14 +142,15 @@ class _AnimeListPageState extends State<AnimeListPage> {
                     ),
                     SizedBox(height: 20),
                     ElevatedButton.icon(
-                      icon: Icon(Icons.save),
-                      label: Text("保存する"),
+                      icon: Icon(Icons.save, color: Colors.white),
+                      label: Text("保存する", style: TextStyle(color: Colors.white)),
                       onPressed: _addAnime,
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        backgroundColor: Colors.deepPurple,
+                        backgroundColor: Colors.blueAccent,
                         foregroundColor: Colors.white,
+                        elevation: 2,
                       ),
                     ),
                   ],
@@ -156,12 +159,14 @@ class _AnimeListPageState extends State<AnimeListPage> {
             ),
             SizedBox(height: 20),
             ElevatedButton.icon(
-              icon: Icon(Icons.download),
-              label: Text("JSONとしてエクスポート"),
+              icon: Icon(Icons.download, color: Colors.blueAccent),
+              label: Text("JSONとしてエクスポート", style: TextStyle(color: Colors.blueAccent)),
               onPressed: exportAnimeDataAsJson,
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                foregroundColor: Colors.blueAccent,
+                elevation: 2,
               ),
             ),
           ],
